@@ -1,0 +1,139 @@
+# ============================================================================
+# .gitignore —— 上传 Gitee 前定稿（2026-11-08 第二轮）
+#
+# 原则（用户定）：【只追踪「第一来源」——人工编写/审查过的源码、脚本、设计文档】；
+#   派生文档、AI 会话记录、一次性脚本、二进制、含本机环境的产物一律不追踪。
+#
+# ⚠️ 全新 clone 后不能直接构建，必须先本地生成被忽略的产物：
+#     python3 tool/basemap_pack/build_packs.py --bundled-only   # 4 个内置底图 .db
+#     flutter create --platforms=android .                     # gradle wrapper jar + 5 个图标
+#     flutter pub get && flutter run
+#   完整步骤见 readme.md「首次构建」。
+# ============================================================================
+
+# ---- 1. 杂项与编辑器临时文件 ----------------------------------------------
+*.class
+# 一次性运行日志
+*.log
+*.pyc
+__pycache__/
+*.swp
+*.swo
+*~
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# ---- 2. IDE / AI 工具 / 本机环境 ------------------------------------------
+# 含本机绝对路径、SDK 位置、会话草稿与设备信息；公开仓库尤其不能带。
+*.iml
+*.ipr
+*.iws
+.idea/
+.vscode/
+.marscode/
+.workbuddy/
+.tools/
+.anl/
+.syntaxhome/
+.codebuddy/
+logs/
+
+# ---- 3. Flutter / Dart / Pub 生成物 ---------------------------------------
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+/coverage/
+app.*.symbols
+app.*.map.json
+.widget_preview/
+
+# ---- 3a. 平台级规则（合并自 android/.gitignore、linux/.gitignore）----------
+# 这两份平台级文件已删除，规则统一收在根文件，避免「就近优先」遮蔽造成两套并存。
+# 任意层级同名 build 目录
+build/
+android/.gradle/
+android/.kotlin/
+# 无锚定，匹配任意层级（原 android/.gitignore 的 .cxx/ 行为，勿改成 android/.cxx/）
+.cxx/
+android/captures/
+android/app/debug/
+android/app/profile/
+android/app/release/
+linux/flutter/ephemeral/
+
+# 本机路径配置与签名密钥（绝不入库）
+android/local.properties
+android/key.properties
+**/*.keystore
+**/*.jks
+GeneratedPluginRegistrant.java
+
+# ---- 4. 二进制 / 可重新生成的大文件（用户决策：全部二进制不追踪）----------
+# 判据：不是人写的，且能由已追踪的脚本/工具重新产出。
+#
+# 安卓构建输入（flutter create --platforms=android . 会重新生成）：
+# 注：旧 android/.gitignore 曾写「wrapper 三件套必须入库」——该说法已作废；
+# gradle-wrapper.jar 不追踪系「全部二进制不追踪」决策，gradlew / gradlew.bat
+# 两个脚本仍正常追踪。
+android/gradle/wrapper/gradle-wrapper.jar
+android/app/src/main/res/mipmap-*/ic_launcher.png
+#
+# 内置底图：pubspec.yaml 声明为 asset，但按决策不上传（约 38.5 MB）。
+#   重新生成：python3 tool/basemap_pack/build_packs.py --bundled-only
+assets/basemap/*.db
+# 全省 0.1° 分卷包（约 2.1 GB）
+basemap_out/
+# 全省 OSM 原始 PBF（tool/pbf_extract 的输入）
+assets/guangdong-latest.osm.pbf
+# 示例/演示 .osmapp 与备份，可再生成、非运行必需
+assets/osm/
+#
+# 数据库、缓存、导出、备份
+*.db
+*.db-wal
+*.db-shm
+*.osmapp
+*.osmapp.bak
+*.pbf
+*.mapexport.json
+*.bak
+*.pre_v*.bak
+
+# ---- 5. 派生文档 / AI 会话文档 / 一次性脚本 / 迁移脚本 / 失效测试 ----------
+# 原则：追踪「生成该文档的第一文档、脚本、代码」，不追踪派生物。
+# 第一文档 = docs/design/01~23 章 + docs/requirements.md + AGENTS.md（人工审查定稿）。
+#
+# AI 会话/状态类（未经人工精炼的过程记录、进度总账、章节索引）
+# 全部归拢到 docs/agent/（工作区保留、不追踪）。AGENTS.md 只留基本交互逻辑。
+docs/agent/
+#
+# 一次性校验脚本：AGENTS.md §1 定义为「跑完就删」的临时验证物，非长期资产
+tool/checks/
+#
+# 迁移脚本：时刻构建最新版本，不做旧库升级；DDL 第一来源是 lib/core/schema.dart
+# 的 userV12Statements（版本不匹配仍会明确报错，见 AGENTS.md §4）
+tool/migrations/
+#
+# test/ 已彻底失效且编译不过（AGENTS.md §1：不修不管不跑）
+/test/
+
+# ---- 6. 保留（便于复核）---------------------------------------------------
+# AGENTS.md、readme.md、pubspec.yaml、pubspec.lock、.metadata、analysis_options.yaml、
+# devtools_options.yaml、.gitignore 本身、各平台自带 .gitignore、
+# lib/**（程序本体）、docs/design/01~23-*.md 与 docs/requirements.md（第一文档）、
+# tool/ 下生成与校验的源码（basemap_pack/、pbf_extract/、osm_prep/）、scripts/**、
+# android/ 与 linux/ 的 runner/manifest/res/gradle 配置与源码。
+#
+# 例外说明：pubspec.lock 虽由工具生成，但它是「锁版本的可复现构建输入」，
+# 会随依赖人工调整，删了每次构建可能拉到不同版本 —— 按「构建输入」保留。

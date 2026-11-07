@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  核心区 OSM 样例（osm_prep 演示输入）
+  构造自 docs/design/07-osm-import.md §2 M2a；供端到端验证：
+    dart run tool/osm_prep/main.dart -i scripts/dev/osm_core_sample.osm -o logs/core_sample.osmapp --region core
+  注意：坐标/路名仅为演示用途，不代表真实 OSM 数据。
+-->
+<osm version="0.6" generator="map-sample">
+  <bounds minlat="22.7000" minlon="114.1200" maxlat="22.7300" maxlon="114.1500"/>
+
+  <!-- 主干路锚点 -->
+  <node id="1" lat="22.7100" lon="114.1300"/>
+  <node id="2" lat="22.7150" lon="114.1300"/>
+  <node id="3" lat="22.7200" lon="114.1300"/>
+  <node id="4" lat="22.7200" lon="114.1350"/>
+  <node id="5" lat="22.7200" lon="114.1400"/>
+  <node id="6" lat="22.7150" lon="114.1400"/>
+  <node id="7" lat="22.7100" lon="114.1400"/>
+  <node id="8" lat="22.7100" lon="114.1350"/>
+
+  <!-- POI / 门牌节点 -->
+  <node id="11" lat="22.7150" lon="114.1350">
+    <tag k="shop" v="convenience"/>
+    <tag k="name" v="大运便利店（示例）"/>
+  </node>
+  <node id="12" lat="22.7120" lon="114.1330">
+    <tag k="addr:housenumber" v="12"/>
+    <tag k="addr:street" v="雁田三巷"/>
+  </node>
+
+  <!-- 路网：骑行 -->
+  <way id="101">
+    <nd ref="3"/><nd ref="4"/><nd ref="5"/>
+    <tag k="highway" v="residential"/>
+    <tag k="name" v="龙平西路（示例段）"/>
+    <tag k="oneway" v="no"/>
+  </way>
+  <way id="102">
+    <nd ref="1"/><nd ref="2"/><nd ref="3"/>
+    <tag k="highway" v="service"/>
+    <tag k="name" v="小区外围路（示例）"/>
+  </way>
+
+  <!-- 路网：仅步行/推行 -->
+  <way id="103">
+    <nd ref="5"/><nd ref="6"/>
+    <tag k="highway" v="footway"/>
+    <tag k="name" v="内部步道（示例）"/>
+  </way>
+
+  <!-- 建筑轮廓（闭合） -->
+  <way id="201">
+    <nd ref="1"/><nd ref="8"/><nd ref="7"/><nd ref="6"/><nd ref="1"/>
+    <tag k="building" v="apartments"/>
+    <tag k="name" v="大运城邦一期（示例楼）"/>
+  </way>
+
+  <!-- 不应被带入：motorway（骑行不可达，工具应过滤） -->
+  <way id="999">
+    <nd ref="1"/><nd ref="5"/>
+    <tag k="highway" v="motorway"/>
+    <tag k="name" v="演示高速（应被过滤）"/>
+  </way>
+</osm>
